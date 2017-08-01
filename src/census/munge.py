@@ -2,7 +2,7 @@ import pandas as pd
 import os
 
 # get list of just csv's of interest
-data_dir = './data/'
+data_dir = 'data/'
 process_dir = os.path.join(data_dir, 'process')
 census_dir = os.path.join(data_dir, 'raw/census')
 census_list = os.listdir(census_dir)
@@ -13,7 +13,7 @@ for f in census_list:
         datafile_list.append(f)
 
 # read metadata
-metadata_fname = "acs2015.csv"
+metadata_fname = "meta2015.csv"
 mdata_loc = os.path.join(process_dir, metadata_fname)  # metadata file location
 mdata = pd.read_csv(mdata_loc, header=None)  # read metadata, simple table
 rowdex = mdata[mdata[3] == 'X'].index.tolist()  # get all rows flagged with 'X'
