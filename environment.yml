@@ -1,0 +1,4 @@
+name: fandom-env
+dependencies:
+- python
+- pip
