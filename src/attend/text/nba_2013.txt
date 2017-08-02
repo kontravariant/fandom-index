@@ -1,0 +1,40 @@
+ 2013-14 NBA REGULAR SEASON ATTENDANCE / INCLUDES GAMES OF WEDNESDAY, APRIL 16, 2014
+
+                                   HOME ATTENDANCE         ROAD ATTENDANCE
+TEAM                             G        ATT    AVG     G        ATT    AVG
+Atlanta Hawks                   41    587,927 14,340    41    708,251 17,274
+Boston Celtics                  41    742,040 18,099    41    716,876 17,485
+Brooklyn Nets                   41    707,331 17,252    41    718,662 17,528
+Charlotte Bobcats               41    636,268 15,519    41    698,106 17,027
+Chicago Bulls                   41    890,370 21,716    41    719,618 17,552
+Cleveland Cavaliers             41    710,522 17,330    41    712,550 17,379
+Dallas Mavericks                41    817,982 19,951    41    708,018 17,269
+Denver Nuggets                  41    692,898 16,900    41    705,675 17,212
+Detroit Pistons                 41    615,238 15,006    41    708,505 17,281
+Golden State Warriors           41    803,436 19,596    41    718,576 17,526
+Houston Rockets                 41    743,082 18,124    41    714,540 17,428
+Indiana Pacers                  41    717,542 17,501    41    732,759 17,872
+Los Angeles Clippers            41    787,692 19,212    41    705,964 17,219
+Los Angeles Lakers              41    771,974 18,829    41    731,678 17,846
+Memphis Grizzlies               41    685,458 16,718    41    708,043 17,269
+Miami Heat                      41    811,036 19,781    41    786,823 19,191
+Milwaukee Bucks                 41    552,067 13,465    41    697,562 17,014
+Minnesota Timberwolves          41    597,157 14,565    41    721,826 17,606
+New Orleans Pelicans            41    672,029 16,391    41    713,288 17,397
+New York Knickerbockers         41    812,292 19,812    41    714,321 17,422
+Oklahoma City Thunder           41    746,323 18,203    41    744,987 18,170
+Orlando Magic                   41    666,046 16,245    41    679,941 16,584
+Philadelphia 76ers              41    568,632 13,869    41    715,093 17,441
+Phoenix Suns                    41    650,739 15,872    41    707,251 17,250
+Portland Trail Blazers          41    809,602 19,746    41    709,822 17,313
+Sacramento Kings                41    667,949 16,291    41    691,240 16,860
+San Antonio Spurs               41    755,031 18,415    41    721,842 17,606
+Toronto Raptors                 41    748,339 18,252    41    684,820 16,703
+Utah Jazz                       41    745,203 18,176    41    709,125 17,296
+Washington Wizards              41    698,068 17,026    41    704,511 17,183
+National Basketball Associatio1230 21,410,273 17,407  1230 21,410,273 17,407
+
+TOTALS                        1230 21,410,273 17,407  1230 21,410,273 17,407
+
+
+
