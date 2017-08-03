@@ -1,6 +1,6 @@
 import requests
 import json
-
+'''
 linksFile = "attendance_links.json"
 with open(linksFile, 'r') as json_file:
     linkDict = json.load(json_file)
@@ -14,7 +14,7 @@ for league, htmlref in linkDict.items():
         with open("html/att/{0}.html".format(league), 'w') as curfile:
             contents = r.text
             curfile.write(contents)
-
+'''
 capFile = "capacity_links.json"
 with open(capFile, 'r') as json_file:
     linkDict = json.load(json_file)

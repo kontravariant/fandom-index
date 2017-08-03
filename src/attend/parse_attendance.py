@@ -49,7 +49,7 @@ for league, html in leagueDict.items(): # iterate over each league and html page
         tbls = soup.find("pre").text # tables are in one big '<pre>'
         for i, tbl in enumerate(tbls.split("FINAL")[1:]): # split on FINAL, tables have note text above them
             year = yearRe.search(str(tbl)).group(0) # get year from the resulting text chunk
-            fname = 'text/nba_{}.txt'.format(year) # create a file name for the current year
+            fname = 'text/nba_{}.txt'.format(year) # create a file n#List_of_current_stadiumsame for the current year
             with open(fname,'w') as f: # save chunk to txt file
                 f.write(tbl)
         attTables = list() # placeholder
