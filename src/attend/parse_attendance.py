@@ -12,15 +12,22 @@ for fname in os.listdir("html/att"):
         html = htmlFile.read()
     leagueDict[leagueName] = html
 
+devel = False
 # debug parameters
-ltest = 'mlb'
-leagueDict = {ltest: leagueDict[ltest]}
+if devel == True:
+    ltest = 'nhl'
+    leagueDict = {ltest: leagueDict[ltest]}
 
+# output path
+writepath = "../../data/process/attend"
 # set up year regex
 yearRe = re.compile(r'((19|20)\d{2})')
 for league, html in leagueDict.items(): # iterate over each league and html page
+
     soup = BeautifulSoup(html, 'html.parser') # soupify
-    if league == "nfl": # parse NFL
+
+
+    if league in ("nfl","nhl"): # parse NFL or NHL, wikipedia pages
         attTables = dict()
         attRegex = re.compile(r'(attendance)') # get only headers with attendance, not 'notes'
         table_title = soup.find_all("span", class_="mw-headline") # find table titles
@@ -32,10 +39,12 @@ for league, html in leagueDict.items(): # iterate over each league and html page
                 pdDframe = pd.read_html(str(curTable), header=0)[0].iloc[:,[0,1,3,4]] # read html table
                 attTables[year] = pdDframe # save iteration to dict
         for year, tbl in attTables.items(): # add year column and concat all year frames
-            tbl['year'] = year
+            tbl['year'] = yearRe.search(str(year)).group(0)
             tbl.columns = [x.upper() for x in tbl.columns]
         longFrame = pd.concat(attTables.values())
-        longFrame.to_csv("../../data/process/nfl.csv", index = False) # write to process/csv
+        longFrame.to_csv(os.path.join(writepath,"{0}_attend.csv".format(league)), index = False) # write to process/csv
+
+
     if league == "nba": # for nba
         tbls = soup.find("pre").text # tables are in one big '<pre>'
         for i, tbl in enumerate(tbls.split("FINAL")[1:]): # split on FINAL, tables have note text above them
@@ -54,11 +63,10 @@ for league, html in leagueDict.items(): # iterate over each league and html page
             # TODO: cut off rows after National Basketball Asso...
             attTables.append(yrTable) # append to list
         longFrame = pd.concat(attTables) # concat df list
-        longFrame.to_csv("../../data/process/nba.csv", index = False) # write to process/csv
+        longFrame.to_csv(os.path.join(writepath,"{0}_attend.csv".format(league)), index = False) # write to process/csv
+
+
     if league == "mlb": # for mlb
         tbl = soup.find("table", class_="tableizer-table") # easy, well formatted HTML table
         pdDframe = pd.read_html(str(tbl), header=0)[0]  # read html table
-        pdDframe.to_csv("../../data/process/mlb.csv", index = False)
-    if league == "nhl": # for nhl
-
-
+        pdDframe.to_csv(os.path.join(writepath,"{0}_attend.csv".format(league)), index = False)
