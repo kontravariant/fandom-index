@@ -8,7 +8,7 @@ import sqlite3 as s3
 
 attendPath = "../../data/process/attend"
 capPath = "../../data/process/capacity"
-sqlitePath = "../../fandom.sqlite"
+sqlitePath = "../../data/fandom.sqlite"
 
 ##---- Clean Attendance Tables ----##
 def clean_attendance():
@@ -38,6 +38,7 @@ def clean_attendance():
             dtable = dtable.iloc[:30,:9] # Cut off text rows
             dtableM = pd.melt(dtable, id_vars=['Team','Ballpark'], value_vars=['2010','2011','2012','2013','2014','2015','2016'])
             dtableM.columns = ['Team','Stadium','Year','Total Home']
+            dtableM['League'] = league.upper()
             attendDict[league] = dtableM
 
         if league == 'nfl':
@@ -53,6 +54,7 @@ def clean_attendance():
 
         if league == 'nhl':
             dtable.columns = ['Team','Stadium','Avg Home','Total Home','Year']
+            dtable = dtable.ix[dtable['Team'] != 'Total']
             dtable['League'] = league.upper()
             attendDict[league] = dtable
 

@@ -2,5 +2,5 @@
 .env
 *.sqlite
 *.spy*
-
+.Rhistory
 .Rproj.user
