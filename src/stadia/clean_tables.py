@@ -3,20 +3,21 @@
 import os
 import pandas as pd
 import re
+import sqlite3 as s3
+
 
 attendPath = "../../data/process/attend"
-
-
+capPath = "../../data/process/capacity"
+sqlitePath = "../../fandom.sqlite"
 
 ##---- Clean Attendance Tables ----##
-attendDict = dict()
-for datfile in os.listdir(attendPath):
-    league = datfile.split("_")[0]
-    attendDict[league] = pd.read_csv(os.path.join(attendPath,datfile), thousands=',')
-
-
-def clean_attendance(attends):
-    for league, dtable in attends.items():
+def clean_attendance():
+    attendDict = dict()
+    for datfile in os.listdir(attendPath):
+        league = datfile.split("_")[0]
+        attendDict[league] = pd.read_csv(os.path.join(attendPath, datfile), thousands=',')
+        
+    for league, dtable in attendDict.items():
         if league == 'nba':
             dtable = dtable.loc[-(
                     dtable['TEAM NAME'].isnull() | # is null or contains these strings
@@ -27,40 +28,46 @@ def clean_attendance(attends):
                     dtable.loc[:,cols] = dtable[cols].str.replace(",","").copy()
 
             dtable.drop(['HOME GAMES','AWAY GAMES'], inplace=True, axis=1)
-            if devel == True:
-                print(dtable)
-            attends[league] = dtable
+
+            dtable.columns = ['Team', 'Total Home', 'Avg Home', 'Total Away', 'Avg Away', 'Year']
+            dtable['League'] = league.upper()
+            attendDict[league] = dtable
+
 
         if league == 'mlb':
-            attends[league] = dtable.loc[:30,:] # Cut off text rows
-
-            if devel == True:
-                print(attends[league])
+            dtable = dtable.iloc[:30,:9] # Cut off text rows
+            dtableM = pd.melt(dtable, id_vars=['Team','Ballpark'], value_vars=['2010','2011','2012','2013','2014','2015','2016'])
+            dtableM.columns = ['Team','Stadium','Year','Total Home']
+            attendDict[league] = dtableM
 
         if league == 'nfl':
             numCols = ['AVERAGE ATTENDANCE', 'TOTAL ATTENDANCE']
             for colname in numCols:
                 dtable.loc[:,colname].replace(inplace=True,regex=True,to_replace=r'\D',value=r'')
-                dtableM = pd.melt(dtable,id_vars=['TEAM','STADIUM'],value_vars=['TOTAL ATTENDANCE','AVERAGE ATTENDANCE'])
-
-            if devel == True:
-                print(dtableM)
-
-            attends[league] = dtableM
+#           dtableM = pd.melt(dtable,id_vars=['TEAM','STADIUM','YEAR'],value_vars=['TOTAL ATTENDANCE','AVERAGE ATTENDANCE'])
+            dtable.columns = ['Team','Stadium','Avg Home','Total Home','Year']
+            dtable['Stadium'] = dtable['Stadium'].str.replace(r'(\?{3})','-')
+            dtable['Stadium'] = dtable['Stadium'].str.replace(r'(\*{2})', '')
+            dtable['League'] = league.upper()
+            attendDict[league] = dtable
 
         if league == 'nhl':
-            pass #Clean Already
-    return
+            dtable.columns = ['Team','Stadium','Avg Home','Total Home','Year']
+            dtable['League'] = league.upper()
+            attendDict[league] = dtable
+
+    attframes = [frame for frame in attendDict.values()]
+    allAtt = pd.concat(attframes)
+    return(allAtt)
 
 ##---- Clean Capcity Tables ----##
-capPath = "../../data/process/capacity"
-capDict = dict()
-for datfile in os.listdir(capPath):
-    league = datfile.split("_")[0]
-    capDict[league] = pd.read_csv(os.path.join(capPath,datfile), thousands=',')
+def clean_capacities():
+    capDict = dict()
+    for datfile in os.listdir(capPath):
+        league = datfile.split("_")[0]
+        capDict[league] = pd.read_csv(os.path.join(capPath, datfile), thousands=',')
 
-def clean_capacities(caps):
-    for league, dtable in caps.items():
+    for league, dtable in capDict.items():
         if league == 'nba':
             LAregex = re.compile(r"^([0-9||,]+) (.+) ([0-9||,]+) (.+)$")
             dtable = dtable.ix[:,0:4]
@@ -73,24 +80,51 @@ def clean_capacities(caps):
             staple['Capacity'] = lakerCap
             dtable = dtable.append(staple)
             dtable.sort_values(by='Arena',inplace=True)
-            caps[league] = dtable
+            dtable.columns = ["Stadium","Location","Team","Capacity"]
+            capDict[league] = dtable
 
         if league == 'mlb':
-            pass
+            dtable = dtable.ix[:,[0,1,2,4]]
+            seating = dtable.ix[:,1]
+            seating = seating.str.replace(",","") # remove commas
+            seating = seating.str.replace("\[\d+\]$","") # remove ref brackets
+            dtable.ix[:,1] = seating
+
+            teams = dtable.ix[:,3]
+            teams = teams.str.replace("\[(.+)\]$","")
+            dtable.ix[:,3] = teams
+            dtable.columns = ["Stadium", "Capacity", "Location", "Team"]
+            capDict[league] = dtable
+
 
         if league == 'nfl':
-            pass
+            dtable = dtable.ix[:,[0,1,2,5]]
+
+            dtable.columns = ["Stadium", "Capacity", "Location", "Team"]
+            capDict[league] = dtable
 
         if league == 'nhl':
-            pass
+            dtable = dtable.ix[:,[0,1,2,3]]
+            dtable.columns = ["Stadium", "Location", "Team", "Capacity"]
+            capDict[league] = dtable
 
-    return
-#print(capacities)
+        dtable['League'] = league.upper() # for every table, give a league column for long format indicator
+
+    capframes = [frame for frame in capDict.values()]
+    allCaps = pd.concat(capframes)
+
+    return(allCaps)
 
 
-devel = True
-if devel == True:
-    league = 'nhl'
-    attendDict = {league: attendDict[league]}
-    clean_capacities(capDict)
-    #print(capDict)
+def write_stadi_tables(cleanAttend=None, cleanCap=None):
+    # connect to sqlite db
+    con = s3.connect(sqlitePath)
+    # write dframe to db
+    cleanAttend.to_sql("attendance", con, if_exists='replace', index=False)
+    cleanCap.to_sql("capacity", con, if_exists='replace', index=False)
+
+
+attFrame = clean_attendance()
+capFrame = clean_capacities()
+
+write_stadi_tables(cleanAttend=attFrame, cleanCap=capFrame)
